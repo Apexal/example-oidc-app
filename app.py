@@ -1,18 +1,33 @@
-from flask import Flask, escape, request
+from flask import Flask, escape, request, render_template
 from flask_oidc_ext import OpenIDConnect
+
+scopes = ['openid', 'email', 'profile', 'cohort']
+claims = [
+    'username',
+    'password',
+    'email',
+    'email_verified',
+    'role',
+    'phone',
+    'phone_verified',
+    'cohort',
+    'majors',
+    'minors',
+    'gender',
+    'given_name',
+    'middle_name',
+    'family_name'
+]
 
 app = Flask(__name__)
 app.secret_key = 'secret'
 app.config['OIDC_CLIENT_SECRETS'] = './client_secrets.json'
-app.config['OIDC_SCOPES'] = ['openid', 'email', 'profile', 'cohort']
+app.config['OIDC_SCOPES'] = scopes
 oidc = OpenIDConnect(app)
 
 @app.route('/')
 def index():
-    if oidc.user_loggedin:
-        return f'Hello, {oidc.user_getfield("given_name")}!'
-    else:
-        return 'Please login'
+    return render_template('index.html', logged_in=oidc.user_loggedin, scopes=scopes, user=oidc.user_getinfo(fields=claims))
 
 @app.route('/login')
 @oidc.require_login
