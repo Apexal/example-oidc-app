@@ -1,4 +1,4 @@
-from flask import Flask, escape, request, render_template
+from flask import Flask, escape, request, render_template, redirect
 from flask_oidc_ext import OpenIDConnect
 
 scopes = ['openid', 'email', 'profile', 'cohort']
@@ -36,8 +36,7 @@ def index():
 @app.route('/login')
 @oidc.require_login
 def login():
-    info = oidc.user_getinfo(fields=['email', 'given_name', 'cohort'])
-    return f'Welcome {info}'
+    return redirect('/')
 
 @app.route('/logout')
 def logout():
