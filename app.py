@@ -27,7 +27,11 @@ oidc = OpenIDConnect(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html', logged_in=oidc.user_loggedin, scopes=scopes, user=oidc.user_getinfo(fields=claims))
+    if oidc.user_loggedin:
+        return render_template('index.html', logged_in=True, scopes=scopes, user=oidc.user_getinfo(fields=claims))
+    else:
+        return render_template('index.html', logged_in=False)
+        
 
 @app.route('/login')
 @oidc.require_login
